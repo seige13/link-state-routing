@@ -70,9 +70,15 @@ class App {
     initializeRouterFromFile() {
         let input = fs.readFileSync('infile.dat', 'utf8').split('\n');
 
+        // console.log(input);
+
         let lastRouterId = '';
         input.forEach(function (line) {
+            if (line.indexOf('\r')) {
+                line = line.split('\r')[0];
+            }
             line = line.split(' ');
+            console.log(line);
             if (line[0] !== '') {
                 const router = new Router();
                 router.id = line[0];
@@ -81,13 +87,22 @@ class App {
                 lastRouterId = line[0];
             } else {
                 const router = this.routers.get(lastRouterId);
+                router.neighbors[line[1]] = parseInt(line[2]) || 1;
                 router.routing_table.push(line[1]);
+                console.log(router.neighbors);
                 router.link_cost = line.length > 2 ? line[2] : 1;
             }
         }, this);
+
+        console.log(this.routers);
     }
 }
 
 // Run the application
 const application = new App();
 application.main();
+
+// const uuid = require('uuid/v4');
+// let i = uuid();
+// console.log(i);
+

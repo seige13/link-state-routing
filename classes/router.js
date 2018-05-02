@@ -14,7 +14,9 @@ class Router {
         this.tick = 0;
         this.network_name = '';
         this.link_cost = 1;
-        this.routing_table = [];
+        this.neighbors = {}; //data structure that stores references to other "directly" connected routers, which can be referenced by id, along with the cost of the link.
+        this.routing_table = []; //Each router should maintain a "routing table" consisting of <network, outgoing link, cost> triples
+        this.received_lsps = {}; //the receiving router has already seen an LSP from the same originating router with a sequence number higher than or equal to the sequence number in the received LSP.
     }
 
     /**
@@ -28,10 +30,21 @@ class Router {
      * connectivity graph and the LSP should be sent out (in the form of function calls) to 
      * all directly connected routers except the one on which it was received.
      * @param {LinkStatePacket} lsp 
-     * @param {Int} id 
+     * @param {Int} router_id 
      */
-    receivePacket(lsp, id) {
+    receivePacket(lsp, router_id) {
+        lsp.ttl--;  //A router that receives an LSP should first decrement the LSP's TTL
 
+        if (lsp.ttl == 0 || (lsp.router_id in this.received_lsps && this.received_lsps[lsp.router_id] >= lsp.sequence) ) {
+            //discard the LSP and not use its information
+        }
+        else {
+            this.received_lsps[lsp.router_id] = lsp.sequence;
+
+            //If the LSP is not discarded, its information should be compared to the receiving 
+            //router’s connectivity graph and the LSP should be sent out (in the form of function calls) 
+            //to all directly connected routers except the one on which it was received.
+        }
     }
 
     /**
@@ -43,6 +56,16 @@ class Router {
      * special infinity value.).
      */
     originatePacket() {
+        let lsp = new LinkStatePacket();
+        this.tick++;
+    }
+
+    /**
+     * If connectivity has changed (as indicated by a received link state packet), the receiving router should run 
+     * Dijkstra’s all-pairs shortest-path algorithm on its updated connectivity graph to re-compute its routing 
+     * table of <network, outgoing link, cost> triples. 
+     */
+    shortestPath() {
 
     }
 }
