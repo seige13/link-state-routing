@@ -1,0 +1,16 @@
+{
+  "name": "link-state-routing",
+  "version": "1.0.0",
+  "description": "link state routing assignment",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./index.js"
+  },
+  "author": "Chris Boffa, Vladimir Smagin, Michael Ramos",
+  "private": true,
+  "license": "ISC",
+  "dependencies": {
+    "inquirer": "^5.2.0",
+    "uuid": "^3.2.1"
+  }
+}
