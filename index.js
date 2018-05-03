@@ -8,6 +8,13 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 
+const readline = require('readline');
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
 const Router = require('./classes/router');
 
 class App {
@@ -22,7 +29,10 @@ class App {
     main() {
         // TODO Initialize router
         this.initializeRouterFromFile();
+        this.promtUser();
+    }
 
+    promtUser() {
         const questions = [
             {
                 type: 'list',
@@ -50,7 +60,13 @@ class App {
                 case 'shutdown':
                     // If the user shuts down a router, change the router object so that it does not send out any 
                     // LSP or do anything in response to originatePacket or receivePacket function calls.
-                    console.log('shutdown');
+                    // rl.question('Please enter ID number of the router that you want to shut down: ', (answer) => {
+                        
+                    //     console.log(`Router ${answer} is now shut down`);      
+                    //     rl.close();
+                    //   });
+                    this.shutDownRouter();
+                    // console.log('shutdown');
                     break;
                 case 'start':
                     // If the user starts up a router, change the router object so it once again behaves normally.
@@ -63,6 +79,7 @@ class App {
             }
         });
     }
+
 
     /**
      * Initialize the router from an input file
@@ -96,11 +113,32 @@ class App {
 
         console.log(this.routers);
     }
+
+    shutDownRouter() {
+        let question = [
+            {
+                type: 'input',
+                name: 'router_id',
+                message: 'Please enter ID of the router that you would like to shut down',
+            }
+        ];
+
+        inquirer.prompt(question).then(answer => {
+            console.log(answer.router_id);
+        });
+        // console.log('shutDownRouter');
+    }
 }
 
 // Run the application
 const application = new App();
 application.main();
+
+// rl.question('Please enter ID number of the router that you want to shut down: ', (answer) => {
+                        
+//     console.log(`Router ${answer} is now shut down`);      
+//     rl.close();
+//   });
 
 // const uuid = require('uuid/v4');
 // let i = uuid();
