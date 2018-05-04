@@ -9,6 +9,7 @@ const inquirer = require('inquirer');
 const fs = require('fs');
 
 const Router = require('./classes/router');
+const Graph = require('./classes/Graph')
 
 class App {
 
@@ -81,7 +82,12 @@ class App {
                 lastRouterId = line[0];
             } else {
                 const router = this.routers.get(lastRouterId);
-                router.routing_table.push(line[1]);
+                let cost = line[2] ? line[2] : 1
+                let connectedRouter = {
+                    routerId: +line[1],
+                    cost: +cost
+                }
+                router.routing_table.push(connectedRouter);
                 router.link_cost = line.length > 2 ? line[2] : 1;
             }
         }, this);
@@ -91,3 +97,19 @@ class App {
 // Run the application
 const application = new App();
 application.main();
+
+// Test for shortest path
+const graph = {
+    start: { A: 5, B: 2 },
+    A: { C: 4, D: 2 },
+    B: { A: 8, D: 7 },
+    C: { D: 6, finish: 3 },
+    D: { finish: 1 },
+    finish: {}
+};
+
+let spf1 = new Graph(graph);
+///spf1.addVertex('A', {B: 7, C: 8});
+
+console.log(spf1.findShortestPath('start', 'finish'))
+

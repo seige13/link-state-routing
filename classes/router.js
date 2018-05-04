@@ -11,10 +11,11 @@ class Router {
 
     constructor() {
         this.id = '';
-        this.tick = 0;
+        this.tick = 1;
         this.network_name = '';
         this.link_cost = 1;
         this.routing_table = [];
+        this.status = 'start'
     }
 
     /**
@@ -43,7 +44,7 @@ class Router {
      * special infinity value.).
      */
     originatePacket() {
-
+        
     }
 }
 
