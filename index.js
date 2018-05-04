@@ -30,7 +30,7 @@ class App {
         // TODO Initialize router
         this.initializeRouterFromFile();
         this.shortestPaths();
-        this.Dijkstra(1);
+        // this.Dijkstra(1);
         console.log('Welcome to the Link State Router Application \n');
         // this.promtUser();
     }
@@ -188,7 +188,16 @@ class App {
             router.distances = shortest_path['dist'];
             // this.routing_table = []; //Each router should maintain a "routing table" consisting of <network, outgoing link, cost> triples
             console.log(router);
-            for ()
+            for (let temp_node of this.routers.values()) {
+                if (temp_node.id != node.id) {
+                    let network = temp_node.network_name;
+                    let cost = router.distances[temp_node.id];
+                    let n = temp_node.id;
+                    while (n != node.id) {
+                        n = shortest_path['prev'][n];
+                    }
+                }
+            }
         }
     }
 
