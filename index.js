@@ -10,10 +10,10 @@ const fs = require('fs');
 
 const readline = require('readline');
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout
+// });
 
 const Router = require('./classes/router');
 
@@ -29,6 +29,7 @@ class App {
     main() {
         // TODO Initialize router
         this.initializeRouterFromFile();
+        console.log('Welcome to the Link State Router Application \n');
         this.promtUser();
     }
 
@@ -45,7 +46,7 @@ class App {
             }
         ];
 
-        console.log('Welcome to the Link State Router Application \n');
+        // console.log('Welcome to the Link State Router Application \n');
         inquirer.prompt(questions).then(answer => {
             switch (answer.user_choice) {
                 case 'continue':
@@ -60,17 +61,13 @@ class App {
                 case 'shutdown':
                     // If the user shuts down a router, change the router object so that it does not send out any 
                     // LSP or do anything in response to originatePacket or receivePacket function calls.
-                    // rl.question('Please enter ID number of the router that you want to shut down: ', (answer) => {
-                        
-                    //     console.log(`Router ${answer} is now shut down`);      
-                    //     rl.close();
-                    //   });
                     this.shutDownRouter();
                     // console.log('shutdown');
                     break;
                 case 'start':
                     // If the user starts up a router, change the router object so it once again behaves normally.
-                    console.log('start');
+                    this.startUpRouter();
+                    // console.log('start');
                     break;
                 case 'quit':
                 default:
@@ -106,27 +103,75 @@ class App {
                 const router = this.routers.get(lastRouterId);
                 router.neighbors[line[1]] = parseInt(line[2]) || 1;
                 router.routing_table.push(line[1]);
-                console.log(router.neighbors);
+                // console.log(router.neighbors);
                 router.link_cost = line.length > 2 ? line[2] : 1;
             }
         }, this);
 
-        console.log(this.routers);
+        // console.log(this.routers);
     }
 
+    /**
+     * shutDownRouter - shuts down a router
+     */
     shutDownRouter() {
+
+        let that = this;
+
         let question = [
             {
                 type: 'input',
                 name: 'router_id',
                 message: 'Please enter ID of the router that you would like to shut down',
+                validate: function (value) {
+                    if (that.routers.has(value)) {
+                        return true;
+                    }
+                    else {
+                        return 'Router ID is not recognized, please enter a valid router ID';
+                    }
+                }
             }
         ];
 
         inquirer.prompt(question).then(answer => {
-            console.log(answer.router_id);
+            const router = this.routers.get(answer.router_id);
+            router.turned_on = false;
+            console.log(`Router ${answer.router_id} is shut down`);
+            this.promtUser();
         });
-        // console.log('shutDownRouter');
+    }
+
+
+    /**
+     * startUpRouter - starts up a router
+     */
+    startUpRouter() {
+
+        let that = this;
+
+        let question = [
+            {
+                type: 'input',
+                name: 'router_id',
+                message: 'Please enter ID of the router that you would like to start up',
+                validate: function (value) {
+                    if (that.routers.has(value)) {
+                        return true;
+                    }
+                    else {
+                        return 'Router ID is not recognized, please enter a valid router ID';
+                    }
+                }
+            }
+        ];
+
+        inquirer.prompt(question).then(answer => {
+            const router = this.routers.get(answer.router_id);
+            router.turned_on = true;
+            console.log(`Router ${answer.router_id} is started up`);
+            this.promtUser();
+        });
     }
 }
 
@@ -144,3 +189,16 @@ application.main();
 // let i = uuid();
 // console.log(i);
 
+// var myMap = new Map();
+
+// var keyString = 'a string',
+//     keyObj = {},
+//     keyFunc = function() {};
+
+// // setting the values
+// myMap.set(keyString, "value associated with 'a string'");
+// myMap.set(keyObj, 'value associated with keyObj');
+// myMap.set(keyFunc, 'value associated with keyFunc');
+
+// console.log(myMap);
+// console.log(myMap.get(keyString));
