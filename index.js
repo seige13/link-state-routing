@@ -29,8 +29,10 @@ class App {
     main() {
         // TODO Initialize router
         this.initializeRouterFromFile();
+        this.shortestPaths();
+        this.Dijkstra(1);
         console.log('Welcome to the Link State Router Application \n');
-        this.promtUser();
+        // this.promtUser();
     }
 
     promtUser() {
@@ -173,6 +175,53 @@ class App {
             this.promtUser();
         });
     }
+
+
+    /**
+     * 
+     */
+    shortestPaths() {
+        for (let test of this.routers.values()) {
+            console.log(test.id, test.neighbors);
+        }
+    }
+
+    /**
+     * 
+     */
+    Dijkstra(source) {
+        let Q = []; //vertex set
+        let dist = {};  //distance from source to v
+        let prev = {};  //Previous node in optimal path from source
+        let u;
+
+        for (let node of this.routers.keys()) {
+            dist[node] = Infinity;
+            prev[node] = undefined;
+            Q.push(node);
+        }
+        dist[source] = 0;
+
+        while(Q.length > 0) {   //while Q is not empty
+            u = this._findMin(dist);
+        }
+        console.log(u);
+        console.log('dist', dist);
+        console.log('prev', prev);
+        console.log('Q', Q);
+    }
+
+    _findMin(set) {
+        let min = 0;
+        for (let i in set) {
+            if (set[i] < set[min]) {
+                min = i;
+            }
+        }
+        return min;
+    }
+
+    
 }
 
 // Run the application
