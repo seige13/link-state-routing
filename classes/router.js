@@ -17,7 +17,8 @@ class Router {
         this.neighbors = {}; //data structure that stores references to other "directly" connected routers, which can be referenced by id, along with the cost of the link.
         this.routing_table = []; //Each router should maintain a "routing table" consisting of <network, outgoing link, cost> triples
         this.received_lsps = {}; //the receiving router has already seen an LSP from the same originating router with a sequence number higher than or equal to the sequence number in the received LSP.
-        this.turned_on = true;
+        this.status = 'start';
+        this.distances = {};
     }
 
     /**

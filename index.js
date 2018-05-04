@@ -138,7 +138,7 @@ class App {
 
         inquirer.prompt(question).then(answer => {
             const router = this.routers.get(answer.router_id);
-            router.turned_on = false;
+            router.status = 'Stop';
             console.log(`Router ${answer.router_id} is shut down`);
             this.promtUser();
         });
@@ -170,7 +170,7 @@ class App {
 
         inquirer.prompt(question).then(answer => {
             const router = this.routers.get(answer.router_id);
-            router.turned_on = true;
+            router.status = 'Start';
             console.log(`Router ${answer.router_id} is started up`);
             this.promtUser();
         });
@@ -181,13 +181,20 @@ class App {
      * 
      */
     shortestPaths() {
-        for (let test of this.routers.values()) {
-            console.log(test.id, test.neighbors);
+        for (let node of this.routers.values()) {
+            console.log(node.id, node.neighbors);
+            const router = this.routers.get(node.id);
+            let shortest_path = this.Dijkstra(router.id);
+            router.distances = shortest_path['dist'];
+            // this.routing_table = []; //Each router should maintain a "routing table" consisting of <network, outgoing link, cost> triples
+            console.log(router);
+            for ()
         }
     }
 
     /**
-     * 
+     *  Dijkstra's algorithm
+     *  reference: https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
      */
     Dijkstra(source) {
         let Q = []; //vertex set
@@ -202,19 +209,44 @@ class App {
         }
         dist[source] = 0;
 
+        // console.log('Q', Q);
         while(Q.length > 0) {   //while Q is not empty
-            u = this._findMin(dist);
+            // console.log('dist', dist);
+            u = this._findMin(dist, Q);
+            // console.log('u', u);
+            let u_index = Q.indexOf(u.toString());
+            // console.log(u_index);
+            Q.splice(u_index,1);
+            // console.log('Q', Q);
+            // console.log();
+            // console.log(this.routers.get(u.toString()));
+            let neighbors = this.routers.get(u.toString()).neighbors;
+            for (let v in neighbors) {
+                // console.log('V', v.toString());
+                if (Q.includes(v.toString())) {
+                    // console.log('v', v);
+                    // console.log;
+                    let alt = dist[u] + neighbors[v];
+                    // console.log('alt', alt);
+                    if (alt < dist[v]) {
+                        dist[v] = alt;
+                        prev[v] = u;
+                    }
+                }
+            }
+            // delete dist[u];
         }
-        console.log(u);
+
+        // console.log(u);
         console.log('dist', dist);
         console.log('prev', prev);
-        console.log('Q', Q);
+        return {'dist' : dist, 'prev': prev};
     }
 
-    _findMin(set) {
+    _findMin(set, arr) {
         let min = 0;
         for (let i in set) {
-            if (set[i] < set[min]) {
+            if (set[i] < set[min] && arr.includes(i)) {
                 min = i;
             }
         }
@@ -227,6 +259,14 @@ class App {
 // Run the application
 const application = new App();
 application.main();
+
+// let arr = [0,1,2,3,4,5];
+// console.log(arr.indexOf(0));
+// console.log(arr.indexOf(1));
+// while (arr.length > 0) {
+//     arr.splice(0,1);
+//     console.log(arr);
+// }
 
 // rl.question('Please enter ID number of the router that you want to shut down: ', (answer) => {
                         
