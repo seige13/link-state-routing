@@ -16,6 +16,7 @@ class Router {
         this.link_cost = 1;
         this.routing_table = [];
         this.status = 'start'
+        this.neighbors = {}; //data structure that stores references to other "directly" connected routers, which can be referenced by id, along with the cost of the link.
     }
 
     /**
