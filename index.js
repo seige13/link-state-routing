@@ -16,6 +16,7 @@ class App {
   constructor() {
     this.routers = new Map();
     this.graph = new Graph();
+    this.offRouters = {};
   }
 
   /**
@@ -131,13 +132,15 @@ class App {
     const router = this.routers.get(router_id);
     router.routing_table = [];
     for (let node of this.routers.values()) {
-      if (node.id != router_id && node.status == 'start') {
+      if (node.id !== router_id && node.status === 'start') {
         let network = node.network_name;
-        let shortestPath = this.graph.findShortestPath(router_id, node.id);
+        let shortestPath = this.graph.findShortestPath(router_id, node.id, this.offRouters);
         let link = shortestPath[0][1];
         let cost = shortestPath[1];
 
-        router.routing_table.push({network, link, cost});
+        if (link) {
+            router.routing_table.push({network, link, cost});
+        }
       }
     }
   }
@@ -167,7 +170,8 @@ class App {
 
     inquirer.prompt(question).then(answer => {
       const router = this.routers.get(answer.router_id);
-      router.status = 'Stop';
+      router.status = 'stop';
+      this.offRouters[answer.router_id] = answer.router_id;
       this.generateRoutingTables();
       console.log(`Router ${answer.router_id} is shut down`);
       this.promtUser();
@@ -200,7 +204,8 @@ class App {
 
     inquirer.prompt(question).then(answer => {
       const router = this.routers.get(answer.router_id);
-      router.status = 'Start';
+      router.status = 'start';
+      delete this.offRouters[answer.router_id];
       this.generateRoutingTables();
       console.log(`Router ${answer.router_id} is started up`);
       this.promtUser();

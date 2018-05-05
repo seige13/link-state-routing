@@ -12,7 +12,11 @@ class Graph {
         this.vertices[name] = edges;
     }
 
-    findShortestPath(start, finish) {
+    updateVertexInGraph(name, edges) {
+        this.vertices[name] = edges;
+    }
+
+    findShortestPath(start, finish, offRouters) {
         let nodes = new PriorityQueue();
         let distances = {};
         let previous = {};
@@ -20,6 +24,9 @@ class Graph {
         let smallest, vertex, neighbor, alt;
 
         for (vertex in this.vertices) {
+            if (vertex in offRouters){
+                continue;
+            }
             if (vertex === start) {
                 distances[vertex] = 0;
                 nodes.enqueue(0, vertex);
