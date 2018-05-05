@@ -1,7 +1,7 @@
 /**
  * Link State Routing
- * 
- * The goal of this assignment is to create a virtual network of routers that send routing data to one another. 
+ *
+ * The goal of this assignment is to create a virtual network of routers that send routing data to one another.
  * This assignment models the way that actual dynamic network routing is performed.
  */
 
@@ -44,7 +44,7 @@ class App {
         // inquirer.prompt(questions).then(answer => {
         //     switch (answer.user_choice) {
         //         case 'continue':
-        //             // If the user chooses to continue, you should call the originatePacket() function on every router 
+        //             // If the user chooses to continue, you should call the originatePacket() function on every router
         //             // in whatever order you choose. Then prompt again.
         //             console.log('continue');
         //             break;
@@ -53,7 +53,7 @@ class App {
         //             console.log('print');
         //             break;
         //         case 'shutdown':
-        //             // If the user shuts down a router, change the router object so that it does not send out any 
+        //             // If the user shuts down a router, change the router object so that it does not send out any
         //             // LSP or do anything in response to originatePacket or receivePacket function calls.
         //             this.shutDownRouter();
         //             // console.log('shutdown');
@@ -88,16 +88,19 @@ class App {
         inquirer.prompt(questions).then(answer => {
             switch (answer.user_choice) {
                 case 'continue':
-                    // If the user chooses to continue, you should call the originatePacket() function on every router 
+                    // If the user chooses to continue, you should call the originatePacket() function on every router
                     // in whatever order you choose. Then prompt again.
-                    console.log('continue');
-                    break;
+                    for (var [k, v] of this.routers) {
+                      v.originatePacket()
+                    }
+
+                    break
                 case 'print':
                     // If the user chooses to print the routing table, display the table
                     console.log('print');
                     break;
                 case 'shutdown':
-                    // If the user shuts down a router, change the router object so that it does not send out any 
+                    // If the user shuts down a router, change the router object so that it does not send out any
                     // LSP or do anything in response to originatePacket or receivePacket function calls.
                     this.shutDownRouter();
                     // console.log('shutdown');
@@ -209,7 +212,7 @@ class App {
 
 
     /**
-     * 
+     *
      */
     shortestPaths() {
         for (let node of this.routers.values()) {
@@ -304,6 +307,7 @@ class App {
 const application = new App();
 application.main();
 
+/*
 // Test for shortest path
 const graph = {
     start: { A: 5, B: 2 },
@@ -318,4 +322,4 @@ let spf1 = new Graph(graph);
 ///spf1.addVertex('A', {B: 7, C: 8});
 
 console.log(spf1.findShortestPath('start', 'finish'))
-
+*/
