@@ -136,7 +136,6 @@ class App {
                 router.routing_table.push({network, link, cost});
             }
         } 
-        console.log(router.routing_table);
     }
 
     /**
