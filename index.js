@@ -91,6 +91,7 @@ class App {
                     // If the user chooses to continue, you should call the originatePacket() function on every router
                     // in whatever order you choose. Then prompt again.
                     for (var [k, v] of this.routers) {
+                      console.log(v.neighbors)
                       v.originatePacket()
                     }
 

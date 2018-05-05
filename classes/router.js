@@ -34,21 +34,28 @@ class Router {
      * @param {Int} id
      */
     receivePacket(lsp, id) {
-      ttl = lsp.ttl - 1;
+      lsp.ttl = lsp.ttl - 1
+      console.log(lsp.ttl)
 
-      if (ttl === 0) {
+      if (lsp.ttl === 0) {
         console.log('TTL is 0')
+        return
       } else {
         for (var key in this.sequenceNumber) {
           if (this.sequenceNumber >= lsp.sequence) //need to account for id of originating router
             console.log('Invalid LSP received: out of sequence')
+            return
         }
       }
 
       //send it to directly connected routers
-
-      console.log(lsp);
-
+/*
+      for (var n in this.neighbors) {
+        console.log('sending to:',n)
+        this.receivePacket(lsp, n)
+      }
+*/
+      console.log('received')
     }
 
 
@@ -63,8 +70,12 @@ class Router {
      */
     originatePacket() {
       let packet = new LinkStatePacket();
+      packet.router_id = this.id;
       console.log(packet)
-      //?receivePacket(packet, this.id) // needs to send to a neighbor that's turned on
+
+      for (var n in this.neighbors) {
+        this.receivePacket(packet, n)
+      }
 
     }
 }
