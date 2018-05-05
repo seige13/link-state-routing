@@ -15,6 +15,7 @@ class App {
 
     constructor() {
         this.routers = new Map();
+        this.graph = new Graph();
     }
 
     /**
@@ -24,6 +25,12 @@ class App {
         // TODO Initialize router
         this.initializeRouterFromFile();
 
+        console.log('Welcome to the Link State Router Application \n');
+        this.promtUser();
+
+    }
+
+    promtUser() {
         const questions = [
             {
                 type: 'list',
@@ -36,7 +43,6 @@ class App {
             }
         ];
 
-        console.log('Welcome to the Link State Router Application \n');
         inquirer.prompt(questions).then(answer => {
             switch (answer.user_choice) {
                 case 'continue':
@@ -46,16 +52,19 @@ class App {
                     break;
                 case 'print':
                     // If the user chooses to print the routing table, display the table
-                    console.log('print');
+                    this.printRoutingTable();
+                    // console.log('print');
                     break;
                 case 'shutdown':
                     // If the user shuts down a router, change the router object so that it does not send out any 
                     // LSP or do anything in response to originatePacket or receivePacket function calls.
-                    console.log('shutdown');
+                    this.shutDownRouter();
+                    // console.log('shutdown');
                     break;
                 case 'start':
                     // If the user starts up a router, change the router object so it once again behaves normally.
-                    console.log('start');
+                    this.startUpRouter();
+                    // console.log('start');
                     break;
                 case 'quit':
                 default:
@@ -73,6 +82,9 @@ class App {
 
         let lastRouterId = '';
         input.forEach(function (line) {
+            if (line.indexOf('\r')) {
+                line = line.split('\r')[0];
+            }
             line = line.split(' ');
             if (line[0] !== '') {
                 const router = new Router();
@@ -87,29 +99,160 @@ class App {
                     routerId: +line[1],
                     cost: +cost
                 }
-                router.routing_table.push(connectedRouter);
+                router.routing_table_1.push(connectedRouter);
+                router.neighbors[line[1]] = parseInt(line[2]) || 1;
+                this.graph.addVertexToGraph(router.id, router.neighbors);
                 router.link_cost = line.length > 2 ? line[2] : 1;
             }
         }, this);
+
+        console.log(this.graph);
+        this.generateRoutingTables();
     }
+
+    /**
+     * 
+     */
+    generateRoutingTables() {
+        for (let router of this.routers.values()) {
+            this._generateRoutingTable(router.id);
+        } 
+    }
+
+
+    /**
+     * 
+     * @param {*} router_id 
+     */
+    _generateRoutingTable(router_id) {
+        const router = this.routers.get(router_id);
+        router.routing_table = [];
+        for (let node of this.routers.values()) {
+            if (node.id != router_id && node.status == 'start') {
+                let network = node.network_name;
+                let shortestPath = this.graph.findShortestPath(router_id, node.id);
+                let link = shortestPath[0][1];
+                let cost = shortestPath[1];
+
+                router.routing_table.push({network, link, cost});
+            }
+        } 
+    }
+
+    /**
+     * shutDownRouter - shuts down a router
+     */
+    shutDownRouter() {
+
+        let that = this;
+
+        let question = [
+            {
+                type: 'input',
+                name: 'router_id',
+                message: 'Please enter ID of the router that you would like to shut down',
+                validate: function (value) {
+                    if (that.routers.has(value)) {
+                        return true;
+                    }
+                    else {
+                        return 'Router ID is not recognized, please enter a valid router ID';
+                    }
+                }
+            }
+        ];
+
+        inquirer.prompt(question).then(answer => {
+            const router = this.routers.get(answer.router_id);
+            router.status = 'Stop';
+            this.generateRoutingTables();
+            console.log(`Router ${answer.router_id} is shut down`);
+            this.promtUser();
+        });
+    }
+
+
+    /**
+     * startUpRouter - starts up a router
+     */
+    startUpRouter() {
+
+        let that = this;
+
+        let question = [
+            {
+                type: 'input',
+                name: 'router_id',
+                message: 'Please enter ID of the router that you would like to start up',
+                validate: function (value) {
+                    if (that.routers.has(value)) {
+                        return true;
+                    }
+                    else {
+                        return 'Router ID is not recognized, please enter a valid router ID';
+                    }
+                }
+            }
+        ];
+
+        inquirer.prompt(question).then(answer => {
+            const router = this.routers.get(answer.router_id);
+            router.status = 'Start';
+            this.generateRoutingTables();
+            console.log(`Router ${answer.router_id} is started up`);
+            this.promtUser();
+        });
+    }
+
+    /**
+     * 
+     */
+    printRoutingTable() {
+        let that = this;
+
+        let question = [
+            {
+                type: 'input',
+                name: 'router_id',
+                message: 'Please enter ID of the router to print routing table',
+                validate: function (value) {
+                    if (that.routers.has(value)) {
+                        return true;
+                    }
+                    else {
+                        return 'Router ID is not recognized, please enter a valid router ID';
+                    }
+                }
+            }
+        ];
+
+        inquirer.prompt(question).then(answer => {
+            const router = this.routers.get(answer.router_id);
+            router.printRoutingTable();
+            this.promtUser();
+        });
+    }
+
 }
 
 // Run the application
 const application = new App();
 application.main();
 
-// Test for shortest path
-const graph = {
-    start: { A: 5, B: 2 },
-    A: { C: 4, D: 2 },
-    B: { A: 8, D: 7 },
-    C: { D: 6, finish: 3 },
-    D: { finish: 1 },
-    finish: {}
-};
+// // Test for shortest path
+// const graph = {
+//     start: { A: 5, B: 2 },
+//     A: { C: 4, D: 2 },
+//     B: { A: 8, D: 7 },
+//     C: { D: 6, finish: 3 },
+//     D: { finish: 1 },
+//     finish: {}
+// };
 
-let spf1 = new Graph(graph);
-///spf1.addVertex('A', {B: 7, C: 8});
+// let spf1 = new Graph();
+// spf1.addVertexToGraph('A', {B: 3, F: 15});
+// spf1.addVertexToGraph('B', {F: 7, G: 8});
+// spf1.addVertexToGraph('F', {H: 7, K: 8});
 
-console.log(spf1.findShortestPath('start', 'finish'))
+// console.log(spf1.findShortestPath('A', 'F'))
 
