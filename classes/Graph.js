@@ -5,7 +5,7 @@ const PriorityQueue = require('./PriorityQueue');
  */
 class Graph {
     constructor(map) {
-        this.vertices = map;
+        this.vertices = map || {};
     }
 
     addVertexToGraph(name, edges) {
@@ -63,7 +63,13 @@ class Graph {
         }
 
         path.push(start);
-        return path.reverse();
+        path = path.reverse();
+        let cost = 0;
+        for (let i = 0; i < path.length-1; i++) {
+            cost += this.vertices[path[i]][path[i+1]];
+        }
+        return [path,cost];
+        // return path;
     }
 }
 

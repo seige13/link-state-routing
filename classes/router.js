@@ -14,6 +14,7 @@ class Router {
         this.tick = 1;
         this.network_name = '';
         this.link_cost = 1;
+        this.routing_table_1 = [];
         this.routing_table = [];
         this.status = 'start'
         this.neighbors = {}; //data structure that stores references to other "directly" connected routers, which can be referenced by id, along with the cost of the link.
@@ -46,6 +47,13 @@ class Router {
      */
     originatePacket() {
         
+    }
+
+    printRoutingTable() {
+        console.log(`Routing table for router ${this.id}`);
+        for (let rout of this.routing_table) {
+            console.log(`Network: ${rout.network}, Link: ${rout.link}, Cost: ${rout.cost}`);
+        }
     }
 }
 
