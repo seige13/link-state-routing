@@ -127,7 +127,7 @@ class App {
     _generateRoutingTable(router_id) {
         const router = this.routers.get(router_id);
         for (let node of this.routers.values()) {
-            if (node.id != router_id) {
+            if (node.id != router_id && node.status == 'start') {
                 let network = node.network_name;
                 let shortestPath = this.graph.findShortestPath(router_id, node.id);
                 let link = shortestPath[0][1];
@@ -236,20 +236,20 @@ class App {
 const application = new App();
 application.main();
 
-// Test for shortest path
-const graph = {
-    start: { A: 5, B: 2 },
-    A: { C: 4, D: 2 },
-    B: { A: 8, D: 7 },
-    C: { D: 6, finish: 3 },
-    D: { finish: 1 },
-    finish: {}
-};
+// // Test for shortest path
+// const graph = {
+//     start: { A: 5, B: 2 },
+//     A: { C: 4, D: 2 },
+//     B: { A: 8, D: 7 },
+//     C: { D: 6, finish: 3 },
+//     D: { finish: 1 },
+//     finish: {}
+// };
 
-let spf1 = new Graph();
-spf1.addVertexToGraph('A', {B: 3, F: 15});
-spf1.addVertexToGraph('B', {F: 7, G: 8});
-spf1.addVertexToGraph('F', {H: 7, K: 8});
+// let spf1 = new Graph();
+// spf1.addVertexToGraph('A', {B: 3, F: 15});
+// spf1.addVertexToGraph('B', {F: 7, G: 8});
+// spf1.addVertexToGraph('F', {H: 7, K: 8});
 
-console.log(spf1.findShortestPath('A', 'F'))
+// console.log(spf1.findShortestPath('A', 'F'))
 
