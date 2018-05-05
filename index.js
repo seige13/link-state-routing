@@ -126,6 +126,7 @@ class App {
      */
     _generateRoutingTable(router_id) {
         const router = this.routers.get(router_id);
+        router.routing_table = [];
         for (let node of this.routers.values()) {
             if (node.id != router_id && node.status == 'start') {
                 let network = node.network_name;
@@ -164,6 +165,7 @@ class App {
         inquirer.prompt(question).then(answer => {
             const router = this.routers.get(answer.router_id);
             router.status = 'Stop';
+            this.generateRoutingTables();
             console.log(`Router ${answer.router_id} is shut down`);
             this.promtUser();
         });
@@ -196,6 +198,7 @@ class App {
         inquirer.prompt(question).then(answer => {
             const router = this.routers.get(answer.router_id);
             router.status = 'Start';
+            this.generateRoutingTables();
             console.log(`Router ${answer.router_id} is started up`);
             this.promtUser();
         });
